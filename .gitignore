@@ -1,0 +1,19 @@
+# 個人的な記録(SauceCode github公開ルール: 非公開)
+00_requirements.md
+01_design.md
+02_tasks.md
+03_execute_log.md
+
+# 非公開の資料
+LinuxでADB周辺機器を使う方法.md
+
+# 改修前のビルド成果物・配布用バイナリ(Pippin 非対応。ATmega32U2 向けを含むため誤書き込み防止)
+adb_usb/*.hex
+adb_usb/*.eep
+adb_usb/*.elf
+adb_usb/*.lss
+adb_usb/*.map
+adb_usb/*.sym
+adb_usb/obj_adb_usb/
+adb_usb/binary/
+adb_usb/.dep/

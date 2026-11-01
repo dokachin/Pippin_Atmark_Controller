@@ -1,0 +1,21 @@
+--- a/converter/adb_usb/matrix.c
++++ b/converter/adb_usb/matrix.c
+@@ -513,6 +513,18 @@
+         if (tmp    & 0x80) buf[1] |= 0x80; else buf[1] &= 0x7F;
+         if (buf[len - 1] & 0x40) yneg = true;
+         if (buf[len - 1] & 0x04) xneg = true;
++    } else if (mouse_handler == ADB_HANDLER_PIPPIN && len == 4) {
++        // Atmark Pippin Controller(controller mode):
++        //   Byte0: b00 y06 y05 y04 y03 y02 y01 y00
++        //   Byte1: b01 x06 x05 x04 x03 x02 x01 x00
++        //   Byte2: Green Red Down Right Left Up Yellow Blue
++        //   Byte3: 1   1   1   1   1   Diamond Circle Square
++        //     b--: shoulder button state(0:pressed, 1:released)
++        // Second button(right shoulder) is reported properly. #724
++        if (buf[0] & 0x40) yneg = true;
++        if (buf[1] & 0x40) xneg = true;
++        // Byte2 and 3 are not mouse data
++        len = 2;
+     } else if (mouse_handler == ADB_HANDLER_MACALLY2_MOUSE && len == 4) {
+         // Macally 2-button mouse:
+         //   Byte0: b00 y06 y05 y04 y03 y02 y01 y00

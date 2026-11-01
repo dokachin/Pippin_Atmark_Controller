@@ -1,0 +1,34 @@
+--- a/converter/adb_usb/matrix.c
++++ b/converter/adb_usb/matrix.c
+@@ -33,6 +33,11 @@
+ #include "wait.h"
+ #include "mouse.h"
+ 
++// Atmark Pippin Controller(controller mode)
++// https://github.com/lampmerchant/tashnotes/blob/main/macintosh/adb/protocols/atmark_pippin_controller.md
++#ifndef ADB_HANDLER_PIPPIN
++#define ADB_HANDLER_PIPPIN              0x46
++#endif
+ 
+ // matrix state buffer(1:on, 0:off)
+ static matrix_row_t matrix[MATRIX_ROWS];
+@@ -308,6 +313,19 @@
+         }
+     }
+ 
++    // Atmark Pippin Controller: try to switch into controller mode
++    // It stays at handler 0x01 after escalation above and accepts 0x46.
++    if (mouse_handler == ADB_HANDLER_CLASSIC1_MOUSE) {
++        adb_host_listen(addr, ADB_REG_3, (reg3 >> 8), ADB_HANDLER_PIPPIN);
++        uint16_t r3 = adb_host_talk(addr, ADB_REG_3);
++        xprintf("M:$%X:Pippin? R3:%04X\n", addr, r3);
++        if ((r3 & 0xFF) == ADB_HANDLER_PIPPIN) {
++            reg3 = r3;
++            mouse_handler = ADB_HANDLER_PIPPIN;
++            xprintf("M:$%X:Pippin\n", addr);
++        }
++    }
++
+     // Classic Protocol 100cpi
+     if (mouse_handler == ADB_HANDLER_CLASSIC1_MOUSE) {
+         xprintf("M:$%X:Classic1 100cpi\n", addr);

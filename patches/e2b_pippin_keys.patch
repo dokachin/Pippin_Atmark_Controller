@@ -1,0 +1,54 @@
+--- a/converter/adb_usb/matrix.c
++++ b/converter/adb_usb/matrix.c
+@@ -452,6 +452,41 @@
+     return;
+ }
+ 
++// Atmark Pippin Controller: ADB scan codes for buttons in Byte2 and Byte3 of Talk 0
++// index = bit number(Byte2:bit15-8, Byte3:bit7-0), 0xFF = not assigned
++static const uint8_t pippin_keycode[16] = {
++    0x35,   // bit0  Square: Escape
++    0x24,   // bit1  Circle: Return
++    0xFF,   // bit2  Diamond: not assigned
++    0xFF,   // bit3  always 1
++    0xFF,   // bit4  always 1
++    0xFF,   // bit5  always 1
++    0xFF,   // bit6  always 1
++    0xFF,   // bit7  always 1
++    0x38,   // bit8  Blue: Shift
++    0x2C,   // bit9  Yellow: /
++    0x3E,   // bit10 Up: Up
++    0x2B,   // bit11 Left: ,
++    0x2F,   // bit12 Right: .
++    0x3D,   // bit13 Down: Down
++    0x36,   // bit14 Red: Control
++    0x31,   // bit15 Green: Space
++};
++static uint16_t pippin_buttons = 0xFFFF;
++
++static void pippin_proc_buttons(uint16_t buttons)
++{
++    // button state(0:pressed, 1:released)
++    uint16_t changed = buttons ^ pippin_buttons;
++    pippin_buttons = buttons;
++    for (uint8_t i = 0; i < 16; i++) {
++        if (!(changed & (1U << i))) continue;
++        uint8_t key = pippin_keycode[i];
++        if (key == 0xFF) continue;
++        register_key((buttons & (1U << i)) ? (key | 0x80) : key);
++    }
++}
++
+ static report_mouse_t mouse_report = {};
+ 
+ static uint8_t mouse_proc(uint8_t addr)
+@@ -523,7 +558,8 @@
+         // Second button(right shoulder) is reported properly. #724
+         if (buf[0] & 0x40) yneg = true;
+         if (buf[1] & 0x40) xneg = true;
+-        // Byte2 and 3 are not mouse data
++        // Byte2 and 3 are buttons registered as keys
++        pippin_proc_buttons((uint16_t)buf[2] << 8 | buf[3]);
+         len = 2;
+     } else if (mouse_handler == ADB_HANDLER_MACALLY2_MOUSE && len == 4) {
+         // Macally 2-button mouse:
