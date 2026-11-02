@@ -99,4 +99,14 @@ sudo hid_listen  # ファームウェアのデバッグ出力の確認
 ### Quake で使う
 
 - Quakespasm 等のソースポートとゲームデータ（`id1/pak0.pak` 等）を用意し、初期設定のまま起動します
-- トラックボールの上下で視点が上下に動かない場合は、メニューの Options → Mouse Look を On にします
+- トラックボールの上下で視点が上下に動かない場合は、メニューの Options → Mouse Look を On にします  
+
+### In Background
+
+I connected a Bandai/Apple **Pippin atmark** controller to a modern PC. The adapter is an **Arduino Pro Micro** with one resistor and an ADB connector, running the **TMK ADB-to-USB** firmware.
+
+At first the controller returned `80 80` for every input. The cause: it identifies itself as an ordinary mouse until you switch its ADB **handler ID to 0x46**, after which it acts as a game pad and each button returns a distinct value.
+
+The host is a 2006 **Dell Precision M90** running Linux Mint XFCE, themed to look like Mac OS 9. The controller is mapped to Quake's default keys and played through **QuakeSpasm**.
+
+My firmware changes are on GitHub (linked above). Fittingly, both the Pippin and Quake were released in 1996.
