@@ -110,3 +110,5 @@ At first the controller returned `80 80` for every input. The cause: it identifi
 The host is a 2006 **Dell Precision M90** running Linux Mint XFCE, themed to look like Mac OS 9. The controller is mapped to Quake's default keys and played through **QuakeSpasm**.
 
 My firmware changes are on [GitHub](https://github.com/dokachin/Pippin_Atmark_Controller). Fittingly, both the Pippin and Quake were released in 1996.
+
+Full write-up (Japanese): https://dokachin.hatenablog.jp/entry/2026/11/02/165514
